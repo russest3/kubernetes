@@ -1,0 +1,11 @@
+FROM centos:latest
+RUN yum -y update
+RUN yum -y install wget
+RUN wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+RUN rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+RUN yum -y install jenkins
+RUN yum -y install java
+RUN yum -y install initscripts
+RUN /etc/init.d/jenkins start
+RUN chkconfig jenkins on
+EXPOSE 8080
