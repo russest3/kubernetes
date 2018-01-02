@@ -1,4 +1,5 @@
-Cluster Build
+#!/bin/bash
+#Cluster Build
 
 wget -O kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
 chmod +x ./kops
@@ -17,6 +18,15 @@ aws iam create-user --user-name kops
 aws iam add-user-to-group --user-name kops --group-name kops
 aws iam create-access-key --user-name kops
 export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
+#{
+#    "AccessKey": {
+#        "UserName": "kops",
+#        "Status": "Active",
+#        "CreateDate": "2017-12-31T00:05:38.188Z",
+#        "SecretAccessKey": "WuDcZpWdKvKukxSjGcmE1ZadzaVyLKhIKb1uZ0Z7",
+#        "AccessKeyId": "AKIAISGVNUWM2DWIKZDA"
+#    }
+#}
 export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 aws configure set aws_access_key_id $(aws configure get aws_access_key_id)
 aws configure set aws_secret_access_key $(aws configure get aws_secret_access_key)
@@ -42,29 +52,16 @@ echo "Waiting 5m /n"
 sleep 5m
 echo "Here is the WebUI password: /n"
 kubectl config view
+#https://52.23.229.144/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+#password: u9rGj8kf2aH1mtKWsYWLtJrGiEisqLb7
 echo "Making persistent volume /n"
-
-
-https://52.23.229.144/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
-password: u9rGj8kf2aH1mtKWsYWLtJrGiEisqLb7
-
-
-
-
-
-
-VirtualBox
-systemctl stop firewalld
-systemctl disable firewalld
-sed -i s/^SELINUX.*/^SELINUX=disabled/g /etc/sysconfig/selinux && reboot
-yum install -y yum-utils device-mapper-persistent-data lvm2 git
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum -y install docker
-systemctl start docker
-systemctl enable docker
-docker login
-mkdir repos
-cd repos
-git clone https://github.com/kubernetes/kubernetes
-cd kubernetes
-make quick-release
+kubectl create -f kubernetes-persistent-volume.yml
+kubectl create -f kubernetes-persistent-volume-claim.yml
+# Jenkins:
+echo "Making Jenkins Pod /n"
+kubectl create -f kubernetes-jenkins-pod.yml
+#Password = bebc4893a8514bfaa65e62247397b72a
+echo "Exposing port 8080 on Jenkins Pod /n"
+kubectl expose rs jenkins-f9ffdd679 --type="LoadBalancer" --name="jenkins-service"
+## Need to fix above, will this work with expose deployment?
+## Need to further script the Jenkins deployment to auto update, install required plugins
