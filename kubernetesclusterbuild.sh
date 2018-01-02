@@ -1,5 +1,8 @@
 #!/bin/bash
-#Cluster Build
+#
+# Author: Steve Russell
+#
+# Kubernetes-AWS-Jenkins Cluster Build Environment
 
 wget -O kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
 chmod +x ./kops
@@ -59,7 +62,7 @@ kubectl create -f kubernetes-persistent-volume.yml
 kubectl create -f kubernetes-persistent-volume-claim.yml
 # Jenkins:
 echo "Making Jenkins Pod /n"
-kubectl create -f kubernetes-jenkins-pod.yml
+kubectl create -f kubernetes-jenkins-deployment.yml
 #Password = bebc4893a8514bfaa65e62247397b72a
 echo "Exposing port 8080 on Jenkins Pod /n"
 kubectl expose rs jenkins-f9ffdd679 --type="LoadBalancer" --name="jenkins-service"
