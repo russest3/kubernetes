@@ -12,6 +12,6 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   awsElasticBlockStore:
-    volumeID: vol-025547945ee721424
+    volumeID: vol-02742ecc411911049
     fsType: ext4
   storageClassName: default

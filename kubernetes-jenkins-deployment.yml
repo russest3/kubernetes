@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: jenkins 
+  name: jenkins
 spec:
   replicas: 1
   selector:
@@ -14,7 +14,7 @@ spec:
     spec:      
       containers:
       - name: jenkins
-        image: jenkins/jenkins:2.67
+        image: jenkins/jenkins:latest
         ports:
         - containerPort: 8080
         - containerPort: 50000
